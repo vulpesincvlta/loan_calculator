@@ -19,18 +19,42 @@ else:
         print('Incorrect parameters')
     elif args.interest is not None:
         if args.type == 'diff':
-            lp = int(args.principal)  # loan principal
-            li = int(args.interest) # interest
-            payments = int(args.periods) # number of payments
+            lp = int(args.principal)
+            li = float(args.interest)
+            payments = int(args.periods)
             i = li / (12 * 100)
             op = 0
             for m in range(payments):
                 diffp = (lp / payments) +  (i * (lp - ((lp * ((m + 1) - 1))/(payments))))
                 print(f'Month {m + 1}: payment is {math.ceil(diffp)}')
                 op += math.ceil(diffp)
-                print(f'Overpayment: {math.ceil(op) - lp}')
+            print(f'Overpayment: {math.ceil(op) - lp}')
         elif args.type == 'annuity':
-            if args.payment is not None:
+            if args.principal is not None:
+                if args.payment is not None:
+                    lp = int(args.principal)
+                    ap = int(args.payment)
+                    li = float(args.interest)
+                    i = li / (12 * 100)
+                    fom = ap / (ap - i * lp)
+                    num_months = math.log(fom , i + 1 )
+                    rounded = math.ceil(num_months)
+                    op = (rounded * ap) - lp
+                    if rounded % 12 == 0:
+                        print(f'It will take {rounded // 12} years to repay this loan! \nOverpayment: {math.ceil(op)}')
+                    else:
+                        print(f'It will take {rounded // 12} years and {rounded % 12} months to repay this loan! \nOverpayment: {math.ceil(op)}')
+                elif args.payment is None:
+                    lp = int(args.principal)
+                    np = int(args.periods)
+                    li = float(args.interest)
+                    i = li / (12 * 100)
+                    p = (1 + i) **  np
+                    mp = lp * ((i * p)/(p - 1))
+                    op = math.ceil(mp) * np - lp
+                    print(f'Your annuity payment = {math.ceil(mp)}!')
+                    print(f'Overpayment: {math.ceil(op)}')
+            if args.principal is None:
                 ap = int(args.payment)
                 li = float(args.interest)
                 np = int(args.periods)
@@ -40,18 +64,5 @@ else:
                 print(f'Your loan principal = {math.floor(lp)}!')
                 op = (ap * np) - lp
                 print(f'Overpayment: {math.ceil(op)}')
-            elif args.payment is None:
-                lp = int(args.principal)
-                ap = int(args.payment)
-                li = float(args.interest)
-                i = li / (12 * 100)
-                fom = ap / (ap - ni * lp)
-                num_months = math.log(fom , li + 1 )
-                rounded = math.ceil(num_months)
-                op = (rounded * monthly_payment) - lp
-                if rounded % 12 == 0:
-                    print(f'It will take {rounded // 12} years to repay this loan! \nOverpayment: {math.ceil(op)}')
-                else:
-                    print(f'It will take {rounded // 12} years and {rounded % 12} months to repay this loan! \nOverpayment: {math.ceil(op)}')
-            else:
-                print('Incorrect parameters')
+        else:
+            print('Incorrect parameters')
